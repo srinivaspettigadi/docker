@@ -1,0 +1,243 @@
+Docker
+---------------
+
+Testing the docker installation
+
+docker run hello-world
+
+bandaru@bandaru:~/jenkins$ docker run hello-world
+Unable to find image 'hello-world:latest' locally
+latest: Pulling from library/hello-world
+0e03bdcc26d7: Pull complete 
+Digest: sha256:7f0a9f93b4aa3022c3a4c147a449bf11e0941a1fd0bf4a8e6c9408b2600777c5
+Status: Downloaded newer image for hello-world:latest
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:     
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (amd64)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+ 
+ ===========================================
+ 
+ 
+ 
+ systemctl start 
+ 
+ docker run hello-world  --> run command  will crates and terminates immediately
+ 
+ docker images / docker image ls  ---> list the docker images
+ 
+ bandaru@bandaru:~/jenkins$ docker image ls
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+hello-world         latest             		   bf756fb1ae65        8 months ago        13.3kB
+
+
+docker ps --> to check the active containers  only
+
+docker ps -a --> to check all the containers including inactive
+
+
+ 
+ docker run --name mycontainer1 hello-world  --> creating a container with our name
+ 
+------------------------------------
+
+you have an image name ubuntu  --> create a new image with the name as sriniubutnu  ----> docker run --name sriniubutnu ubuntu
+ 
+ complete image name will be like   --->  username/reponame:tagname
+ 
+ 
+docker run ---> it will pull and run the image
+
+dcoker pull ---> will download and save it thats it
+
+create a docker tag with new name test2  -->  docker tag srinivas493/firstrepo:test srinivas493/firstrepo:test2
+
+create a tag with test3 for the same image      
+
+pushing image to hub----
+-------------------------------------
+
+we need to login to docker using credentails ---> srinivas493 --usename  and Srinivas --> password
+
+if the old credentails are being used then use logout and then login --> u will able to login
+
+docker push docker.io/srinivas493/firstrepo:test2       ---> test2 is a new tag name to push to docker hub
+
+ 
+ ==============================================================================
+ ==============================================================================
+ 
+ Different connection modes in docker
+ -----------------------------------------------------------
+ 
+ docker run -itd (interactive terminal detached mode)
+ 
+docker run -itd ubuntu
+
+  stopiing the container  -->  docker stop 13a939e21b00
+
+docker run -it ubuntu  ----> go inside the ubuntu container
+(  the container will be up only untill u come out of that )
+
+
+docker run -it ubuntu  ------> ctrl p ctrl q will come of the container but still container will be up and running
+
+
+differenec between start and run  -------------->   run will always create a container from that image and start will only start the stopped container, will not create a new one
+
+
+docker attach containerid  --->  a continaer is already running and u want to enter the terminal of that container
+
+then ctrl p ctrl q will come out from container
+
+
+ ==============================================================================
+ ==============================================================================
+ 
+ 
+ Deleting the container and images
+ ----------------------------------------------------------
+ 
+ docker rm container_id
+ 
+ docker rmi image name ------> docker rmi hello-world  ---> u can only remove the image when all the containers created from that image are deleted, else u cant delete it
+ 
+ sometimes u canr remove the image if u give the tag name according u like  ---> docker rmi srinivas493/firstrepo:test   ---> complete name will remove the image using docker rmi
+ 
+ 
+ ===================================================
+ 
+ 
+ Sharing the content with the local and continer using Volumes        
+ 
+ 
+ VOLUMES
+ ---------------------
+ 
+ here we are creating a volume while creating a container
+ 
+ docker run -it --name test1 -v data:/data ubuntu
+											source destination on continer
+	
+	
+	docker run -it --name test1 -v data:/data
+	
+	docker run -it --name vol1 -v test:/test ubuntu
+	
+	check the docker volumes usieng
+	
+	docker volume ls --> u will get the volume name
+	then docker inspect test (test is the name of volume)
+	
+----------------------------------------------------------------------------------------
+If no voulmes is created at the time of creating continer then how to copy the files from continer to host	
+	
+continer to host --------->  docker cp testcopy:/a.txt .   (  testcopy is the name of the container, :/a.txt is the path of file inside the container and . is the current directory on the host )
+
+Host to container -------->docker cp hh.txt testcopy:/hh.txt
+
+
+ 
+ 
+ Creating our own images
+ ====================================================
+ ====================================================
+ ====================================================
+ 
+ 
+ Images can be created in two ways   
+ 
+ 1. From container --> create an image
+ 2. Docker File
+ 
+ 
+ 1 ---> commit the image  -----> docker commit forcc srinivas493/ubuntu:vim
+ 
+ 
+root@bandaru:/home/bandaru# docker commit forcc srinivas493/ubuntu:vim              ------------> commiting
+
+sha256:7848dc44bba9198f23a2918732b80188a03606c071d6249f342d251a60aa63d1
+
+root@bandaru:/home/bandaru# docker images
+REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
+srinivas493/ubuntu   vim                 7848dc44bba9        6 seconds ago       265MB
+ubuntu               latest              4e2eef94cd6b        2 weeks ago         73.9MB
+
+root@bandaru:/home/bandaru# docker history srinivas493/ubuntu:vim
+IMAGE               CREATED             CREATED BY                                      SIZE                COMMENT
+7848dc44bba9        44 seconds ago      /bin/bash                                       191MB               
+4e2eef94cd6b        2 weeks ago         /bin/sh -c #(nop)  CMD ["/bin/bash"]            0B                  
+<missing>           2 weeks ago         /bin/sh -c mkdir -p /run/systemd && echo 'do…   7B                  
+<missing>           2 weeks ago         /bin/sh -c set -xe   && echo '#!/bin/sh' > /…   811B                
+<missing>           2 weeks ago         /bin/sh -c [ -z "$(apt-get indextargets)" ]     1.01MB              
+<missing>           2 weeks ago         /bin/sh -c #(nop) ADD file:9f937f4889e7bf646…   72.9MB              
+
+root@bandaru:/home/bandaru# 
+
+We have crated an images from container where vi package is installed 
+
+docker history  srinivas493/ubuntu:vim  -------> this command tells u the file system added above that  
+
+now pushing the image to docker hub ---> docker push srinivas493/ubuntu:vim
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+
+Now creating images using dockerfile
+
+
+RUN  --> will be executed during the build of the image
+CMD --> will execute once the container is started
+
+docker build -t srinivas493/ubuntu:vipackagedockerfile . -----> it will create the ubuntu image
+
+--------------------------------------------------------------------------
+if u want to enter into the container u need to give  -----------> docker attach container_id
+
+if u are unable to enter using the attach command then u  need to enter the below commands
+
+docker exec -it a029164575a1 bash
+
+docker exec -it container_id bash
+
+
+
+===================================================================
+
+EXPOSING PORT 
+---------------------------------
+exposing port number using expose port forwarding
+
+  
+docker run -itd -P tomcat       -----------> if u want to expose port to host port , we can do only that if the docker image was build with expose inside it
+
+if want to expose port on particular port like --------->   docker run -itd -p 9999:8080 tomcat
+
+docker inspect container id will show below :---------
+
+"Ports": {
+                "8080/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "9999"
+                    }
+                ]
+
